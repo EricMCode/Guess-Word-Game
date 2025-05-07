@@ -7,6 +7,7 @@ const guessSpan = document.querySelector("#guessSpan"); //Selects the span where
 const messageParagraph = document.querySelector(".message"); //Selects empty paragraph where message will appear when player guesses a letter
 const hiddenButton = document.querySelector(".play-again"); //Selects hidden button to prompt player to play again
 const word = "magnolia"; //Starter word to test the game untill you draw from an API
+const guessedPlayerLetters = [];
 
 const activeWord = function(word) {
     const placeholder = [];
@@ -18,15 +19,41 @@ const activeWord = function(word) {
         //placeholder.join(""); //Doesn't seem to work
     }
     wordInProgress.innerText = placeholder.join("");
-}
+};
 
 activeWord(word);
 
 guessButton.addEventListener("click", function(e) {
     e.preventDefault();
     //const inputName = 
-    console.log(guessLetter.innerText); 
+    //console.log(guessLetter.innerText); 
     const guess = guessLetter.value;
-    console.log(guess);
+    //console.log(guess);
     guessLetter.value = "";
-})
+    messageParagraph.innerText = "";
+    const validatePlayer = validatePlayerInput(guess); //Says input not defined, not sure how to fix
+    console.log(validatePlayer);
+});
+
+const validatePlayerInput = function(input) {
+    const acceptedLetter = /[a-zA-Z]/;
+    if (input.length === 0) {
+        messageParagraph.innerText = "Please insert a letter."
+    } else if (input.length > 1) {
+        messageParagraph.innerText = "One charachter only please.";
+    } else if (!input.match(acceptedLetter)) {
+        messageParagraph.innerText = "A-Z characters only please.";
+    } else {
+        return input;
+    }
+};
+
+const makeGuess = function(guess) {
+    guess = guess.toUpperCase();
+    if (guessedPlayerLetters.includes(guess)) {
+        messageParagraph.innerText = "You already guessed that letter, silly. Try again.";
+      } else {
+        guessedPlayerLetters.push(guess);
+        console.log(guessedPlayerLetters);
+      }
+};
