@@ -8,6 +8,9 @@ const guessSpan = document.querySelector("#guessSpan"); // Span inside remaining
 const messageParagraph = document.querySelector(".message"); // Message to user
 const hiddenButton = document.querySelector(".play-again"); // Play again button
 let remainingGuessesCount = 8; // Max number of guesses the player can make.
+let gameOver = false;
+const letterLabel = document.querySelector('label[for="letter"]');
+
 
 const getWord = async function () {
     const response = await fetch("https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt");
@@ -131,10 +134,8 @@ const updateRemainingGuesses = function (guess) {
 
     if (remainingGuessesCount === 0) {
         messageParagraph.innerText = `Game over! The word was "${word.toUpperCase()}".`;
-        guessButton.classList.add("hide");
-        guessLetter.classList.add("hide");
-        guessedLetters.classList.add("hide");
-        hiddenButton.classList.remove("hide");
+        gameOver = true;
+        startOver();
     } else if (remainingGuessesCount === 1) {
         guessSpan.innerText = "1 guess";
     } else {
@@ -145,11 +146,43 @@ const updateRemainingGuesses = function (guess) {
 const checkIfPlayerWon = function () {
     if (wordInProgress.innerText === word.toUpperCase()) {
         messageParagraph.innerText = "🎉 You guessed correct the word!";
-        guessButton.classList.add("hide");
-        guessLetter.classList.add("hide");
-        guessedLetters.classList.add("hide");
-        hiddenButton.classList.remove("hide");
+        gameOver = true;
+        startOver();
     }
 };
 
 getWord();
+
+const startOver = function () {
+    guessButton.classList.add("hide");
+    guessLetter.classList.add("hide");
+    guessedLetters.classList.add("hide");
+    remainingGuesses.classList.add("hide");
+    letterLabel.classList.add("hide");
+
+
+    hiddenButton.classList.remove("hide"); // Show the Play Again button
+};
+
+hiddenButton.addEventListener("click", function () {
+    messageParagraph.classList.remove("win"); // Remove "win" styling if it was added
+    messageParagraph.innerText = ""; // Clear the message text
+    guessedLetters.innerHTML = ""; // Clear the list of guessed letters
+
+    //Reset Game State:
+    remainingGuessesCount = 8; 
+    guessedPlayerLetters.length = 0; // Empty the array in-place
+    guessSpan.innerText = `${remainingGuessesCount} guesses`; // Updates guess display
+
+    // Show guessing interface
+    guessButton.classList.remove("hide");
+    guessLetter.classList.remove("hide");
+    guessedLetters.classList.remove("hide");
+    letterLabel.classList.remove("hide");
+
+
+    // Hide the "Play Again" button
+    hiddenButton.classList.add("hide");
+
+    getWord();
+});
